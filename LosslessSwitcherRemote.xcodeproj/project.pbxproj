@@ -11,14 +11,20 @@
 		01B6748D29DFDF11000332D1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B6748C29DFDF11000332D1 /* ContentView.swift */; };
 		01B6748F29DFDF12000332D1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 01B6748E29DFDF12000332D1 /* Assets.xcassets */; };
 		01B6749229DFDF12000332D1 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 01B6749129DFDF12000332D1 /* Preview Assets.xcassets */; };
+		01B6749929DFE029000332D1 /* NetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B6749829DFE029000332D1 /* NetworkClient.swift */; };
+		01B6749F29E1D219000332D1 /* LosslessSwitcherProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B6749E29E1D219000332D1 /* LosslessSwitcherProxy.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0143540229E36C020087E6C3 /* LosslessSwitcherRemote.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = LosslessSwitcherRemote.entitlements; sourceTree = "<group>"; };
+		017A253529E2011E00EA2033 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		01B6748729DFDF11000332D1 /* LosslessSwitcherRemote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LosslessSwitcherRemote.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		01B6748A29DFDF11000332D1 /* LosslessSwitcherRemoteApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LosslessSwitcherRemoteApp.swift; sourceTree = "<group>"; };
 		01B6748C29DFDF11000332D1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		01B6748E29DFDF12000332D1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		01B6749129DFDF12000332D1 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		01B6749829DFE029000332D1 /* NetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkClient.swift; sourceTree = "<group>"; };
+		01B6749E29E1D219000332D1 /* LosslessSwitcherProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LosslessSwitcherProxy.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,9 +57,13 @@
 		01B6748929DFDF11000332D1 /* LosslessSwitcherRemote */ = {
 			isa = PBXGroup;
 			children = (
-				01B6748A29DFDF11000332D1 /* LosslessSwitcherRemoteApp.swift */,
 				01B6748C29DFDF11000332D1 /* ContentView.swift */,
+				01B6749E29E1D219000332D1 /* LosslessSwitcherProxy.swift */,
+				01B6749829DFE029000332D1 /* NetworkClient.swift */,
+				01B6748A29DFDF11000332D1 /* LosslessSwitcherRemoteApp.swift */,
 				01B6748E29DFDF12000332D1 /* Assets.xcassets */,
+				0143540229E36C020087E6C3 /* LosslessSwitcherRemote.entitlements */,
+				017A253529E2011E00EA2033 /* Info.plist */,
 				01B6749029DFDF12000332D1 /* Preview Content */,
 			);
 			path = LosslessSwitcherRemote;
@@ -138,6 +148,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				01B6748D29DFDF11000332D1 /* ContentView.swift in Sources */,
+				01B6749F29E1D219000332D1 /* LosslessSwitcherProxy.swift in Sources */,
+				01B6749929DFE029000332D1 /* NetworkClient.swift in Sources */,
 				01B6748B29DFDF11000332D1 /* LosslessSwitcherRemoteApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -264,12 +276,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = LosslessSwitcherRemote/LosslessSwitcherRemote.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"LosslessSwitcherRemote/Preview Content\"";
 				DEVELOPMENT_TEAM = 3RTN3G859Z;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = LosslessSwitcherRemote/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -293,12 +307,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = LosslessSwitcherRemote/LosslessSwitcherRemote.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"LosslessSwitcherRemote/Preview Content\"";
 				DEVELOPMENT_TEAM = 3RTN3G859Z;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = LosslessSwitcherRemote/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

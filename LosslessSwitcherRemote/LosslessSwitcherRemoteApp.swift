@@ -9,9 +9,11 @@ import SwiftUI
 
 @main
 struct LosslessSwitcherRemoteApp: App {
+    @StateObject var losslessSwitcherProxy = LosslessSwitcherProxy.shared
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(losslessSwitcherProxy)
         }
     }
 }
