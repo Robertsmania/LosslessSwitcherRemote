@@ -19,6 +19,9 @@ I'm working on getting the LosslessSwitcherRemote onto Testflight for easier dis
 
 ## App details
 
+Here is a video of the LosslessSwitcher Remote iOS app in use:
+[![Watch the video](https://img.youtube.com/vi/wjMEUtEg41s/0.jpg)](https://youtu.be/wjMEUtEg41s)
+
 If you start the iOS app with no servers running this is the screen you get.  You can manually refresh and look for servers, but if none are running on your network this is as far as it goes:
 
 ![LLS_Remote_iOS_01](https://user-images.githubusercontent.com/11642124/231374790-244ad537-3f7a-4162-b49b-a50f89f9fcf8.png)
