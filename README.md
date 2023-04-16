@@ -6,8 +6,8 @@ iOS companion app for LosslessSwitcher
 </p>
 
 #  
-This is an iOS companion app for the LosslessSwitcher macOS app:
-https://github.com/Robertsmania/LosslessSwitcher
+This is an iOS companion app for the Network Server version of the LosslessSwitcher macOS app:
+https://github.com/Robertsmania/LosslessSwitcherNetworkServer
 
 That project is a fork of the LosslessSwitcher project:
 https://github.com/vincentneo/LosslessSwitcher
