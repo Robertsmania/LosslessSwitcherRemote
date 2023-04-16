@@ -87,42 +87,47 @@ struct ContentView: View {
     func controlSection() -> some View {
         if losslessSwitcherProxy.connection?.state == .ready && !showConnectionDetails {
             Group {
-                VStack {
-                    Text("\(losslessSwitcherProxy.serverHostName): \(losslessSwitcherProxy.defaultOutputDeviceName)")
-                    
-                    Button("Refresh", action: {
-                        losslessSwitcherProxy.sendRequest(.refresh)
-                    }).padding(.vertical)
-                    
-                    let formattedCurrentSampleRate = String(format: "Current: %.1f kHz", losslessSwitcherProxy.currentSampleRate)
-                    Text(formattedCurrentSampleRate)
-                    let formattedDetectedSampleRate = String(format: "Detected: %.1f kHz", losslessSwitcherProxy.detectedSampleRate)
-                    Text(formattedDetectedSampleRate)
-                    let autoSwitchingDescription = losslessSwitcherProxy.autoSwitchingEnabled ? "Auto Switching Enabled" : "Auto Switching Disabled"
-                    Text(autoSwitchingDescription)
-                    
-                    Button("Toggle Auto Switch", action: {
-                        losslessSwitcherProxy.sendRequest(.toggleAutoSwitching)
-                    }).padding(.vertical)
-                    
-                    Button("Set Rate to Detected", action: {
-                        losslessSwitcherProxy.sendRequest(.setDeviceSampleRate(losslessSwitcherProxy.detectedSampleRate * 1000))
-                    }).padding(.vertical)
-                        .disabled(losslessSwitcherProxy.detectedSampleRate < 1)
-                    
-                    Picker("Sample Rate", selection: $selectedSampleRateIndex) {
-                        //ForEach(0..<losslessSwitcherProxy.standardSampleRates.count) { index in
-                        ForEach(losslessSwitcherProxy.supportedSampleRates.indices, id: \.self) { index in
-                            Text("\(losslessSwitcherProxy.supportedSampleRates[index], specifier: "%.1f") kHz")
+                ScrollView {
+                    VStack {
+                        Text("\(losslessSwitcherProxy.serverHostName): \(losslessSwitcherProxy.defaultOutputDeviceName)")
+                        
+                        Button("Refresh", action: {
+                            losslessSwitcherProxy.sendRequest(.refresh)
+                        }).padding(.vertical)
+                        
+                        let formattedCurrentSampleRate = String(format: "Current: %.1f kHz", losslessSwitcherProxy.currentSampleRate)
+                        Text(formattedCurrentSampleRate)
+                        let formattedDetectedSampleRate = String(format: "Detected: %.1f kHz", losslessSwitcherProxy.detectedSampleRate)
+                        Text(formattedDetectedSampleRate)
+                        let autoSwitchingDescription = losslessSwitcherProxy.autoSwitchingEnabled ? "Auto Switching Enabled" : "Auto Switching Disabled"
+                        Text(autoSwitchingDescription)
+                        
+                        Button("Toggle Auto Switch", action: {
+                            losslessSwitcherProxy.sendRequest(.toggleAutoSwitching)
+                        }).padding(.vertical)
+                        
+                        Button("Set Rate to Detected", action: {
+                            losslessSwitcherProxy.sendRequest(.setDeviceSampleRate(losslessSwitcherProxy.detectedSampleRate * 1000))
+                        }).padding(.vertical)
+                            .disabled(losslessSwitcherProxy.detectedSampleRate < 1)
+                        
+                        Text("Supported sample rates:")
+                        
+                        Picker("Sample Rate", selection: $selectedSampleRateIndex) {
+                            //ForEach(0..<losslessSwitcherProxy.standardSampleRates.count) { index in
+                            ForEach(losslessSwitcherProxy.supportedSampleRates.indices, id: \.self) { index in
+                                Text("\(losslessSwitcherProxy.supportedSampleRates[index], specifier: "%.1f") kHz")
+                            }
                         }
+                        .pickerStyle(WheelPickerStyle())
+                        .frame(width: 150, height: 100)
+                        .clipped()
+                        
+                        Button("Set Rate to Selected", action: {
+                            losslessSwitcherProxy.sendRequest(.setDeviceSampleRate(losslessSwitcherProxy.supportedSampleRates[selectedSampleRateIndex] * 1000))
+                        }).padding(.vertical)
+                            .disabled(losslessSwitcherProxy.supportedSampleRates.count == 0)
                     }
-                    .pickerStyle(WheelPickerStyle())
-                    .frame(width: 150, height: 100)
-                    .clipped()
-                    Button("Set Rate to Selected", action: {
-                        losslessSwitcherProxy.sendRequest(.setDeviceSampleRate(losslessSwitcherProxy.supportedSampleRates[selectedSampleRateIndex] * 1000))
-                    }).padding(.vertical)
-                        .disabled(losslessSwitcherProxy.supportedSampleRates.count == 0)
                 }
             }
         }
