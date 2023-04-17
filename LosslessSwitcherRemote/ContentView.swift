@@ -43,40 +43,42 @@ struct ContentView: View {
                 
                 
                 if showConnectionDetails {
-                    Text("\(losslessSwitcherProxy.discoveredServices.count) service(s) found:")
-                        .padding(.top)
-                    
-                    ForEach(losslessSwitcherProxy.discoveredServices.indices, id: \.self) { index in
+                    ScrollView {
+                        Text("\(losslessSwitcherProxy.discoveredServices.count) service(s) found:")
+                            .padding(.top)
+                        
+                        ForEach(losslessSwitcherProxy.discoveredServices.indices, id: \.self) { index in
                             
-                        HStack {
-                            Text(losslessSwitcherProxy.getHostNameFromService(at: index))
+                            HStack {
+                                Text(losslessSwitcherProxy.getHostNameFromService(at: index))
+                                
+                                Button("Connect", action: {
+                                    losslessSwitcherProxy.connectToService(at: index, with: .refresh)
+                                })
+                                
+                                /*
+                                 Button("Disconnect", action: {
+                                 losslessSwitcherProxy.disconnectFromService()
+                                 })
+                                 .disabled(losslessSwitcherProxy.connection?.state != .ready)
+                                 */
+                            }.padding(.vertical)
                             
-                            Button("Connect", action: {
-                                losslessSwitcherProxy.connectToService(at: index, with: .refresh)
-                            })
-                            
-                            /*
+                        }
+                        
+                        if let connectionStatus = losslessSwitcherProxy.connection?.state.description {
+                            Text("Current connection: \(losslessSwitcherProxy.serverHostName)")
+                            Text("Status: \(connectionStatus)")
                             Button("Disconnect", action: {
                                 losslessSwitcherProxy.disconnectFromService()
                             })
                             .disabled(losslessSwitcherProxy.connection?.state != .ready)
-                             */
-                        }.padding(.vertical)
+                        }
                         
+                        Button("Browse for services", action: {
+                            losslessSwitcherProxy.browseForServices()
+                        }).padding(.vertical)
                     }
-                    
-                    if let connectionStatus = losslessSwitcherProxy.connection?.state.description {
-                        Text("Current connection: \(losslessSwitcherProxy.serverHostName)")
-                        Text("Status: \(connectionStatus)")
-                        Button("Disconnect", action: {
-                            losslessSwitcherProxy.disconnectFromService()
-                        })
-                        .disabled(losslessSwitcherProxy.connection?.state != .ready)
-                    }
-                    
-                    Button("Browse for services", action: {
-                        losslessSwitcherProxy.browseForServices()
-                    }).padding(.vertical)
                     
                 }
             }
