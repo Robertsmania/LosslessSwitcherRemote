@@ -13,9 +13,15 @@ That project is a fork of the LosslessSwitcher project:
 https://github.com/vincentneo/LosslessSwitcher
 
 ## Installation
-At the moment, you need to clone the source code and then build and run it on your iOS device from Xcode.
+You can clone or download the source code from a release,  then build and run it on your iOS device from Xcode.
 
-I'm working on getting the LosslessSwitcherRemote onto Testflight for easier distribution.
+Or, you can get the LosslessSwitcherRemote iOS app from TestFlight.
+
+Use this URL to join the beta test and download the app:
+
+https://testflight.apple.com/join/QDtXe7tV
+
+I will do my best to keep the TestFlight version in sync with whats here on GitHub.
 
 ## App details
 
