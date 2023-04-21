@@ -7,17 +7,23 @@
 
 import SwiftUI
 import Network
+import CoreAudioTypes
 
 class LosslessSwitcherProxy: ObservableObject {
     static let shared = LosslessSwitcherProxy()
-    @Published var currentSampleRate: Float64 = 0
-    @Published var detectedSampleRate: Float64 = 0
+    @Published var currentSampleRate: Float64 = 1
+    @Published var currentBitDepth: UInt32 = 0
+    @Published var detectedSampleRate: Float64 = 1
+    @Published var detectedBitDepth: UInt32 = 0
     @Published var autoSwitchingEnabled: Bool = false
-    @Published var supportedSampleRates: [Float64] = []
+    @Published var bitDepthDetectionEnabled: Bool = false
+    @Published var sampleRatesForCurrentBitDepth: [CodableAudioStreamBasicDescription] = []
+    @Published var bitDepthsForCurrentSampleRate: [CodableAudioStreamBasicDescription] = []
     @Published var discoveredServices: [NWBrowser.Result] = []
     @Published var connection: NWConnection?
     @Published var defaultOutputDeviceName: String = ""
     @Published var serverHostName: String = ""
+    @Published var responseTimeStamp: String = ""
     private let networkClient = NetworkClient()
     private var willEnterForegroundObserver: NSObjectProtocol?
     private var willResignActiveObserver: NSObjectProtocol?
@@ -31,11 +37,16 @@ class LosslessSwitcherProxy: ObservableObject {
         
         networkClient.onReceiveServerResponse = { [weak self] serverResponse in
             self?.currentSampleRate = serverResponse.currentSampleRate
+            self?.currentBitDepth = serverResponse.currentBitDepth
             self?.detectedSampleRate = serverResponse.detectedSampleRate
+            self?.detectedBitDepth = serverResponse.detectedBitDepth
             self?.autoSwitchingEnabled = serverResponse.autoSwitchingEnabled
-            self?.supportedSampleRates = serverResponse.supportedSampleRates
+            self?.bitDepthDetectionEnabled = serverResponse.bitDepthDetectionEnabled
+            self?.sampleRatesForCurrentBitDepth = serverResponse.sampleRatesForCurrentBitDepth
+            self?.bitDepthsForCurrentSampleRate = serverResponse.bitDepthsForCurrentSampleRate
             self?.defaultOutputDeviceName = serverResponse.defaultOutputDeviceName
             self?.serverHostName = serverResponse.serverHostName
+            self?.responseTimeStamp = serverResponse.timeStamp
         }
         
         willResignActiveObserver = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: .main) { [weak self] _ in

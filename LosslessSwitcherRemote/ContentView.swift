@@ -11,11 +11,26 @@ import Network
 struct ContentView: View {
     @EnvironmentObject private var losslessSwitcherProxy: LosslessSwitcherProxy
     @State private var selectedSampleRateIndex = 0
+    @State private var selectedBitDepthIndex = 0
     @State private var showConnectionDetails = false
+    @State private var pickerSampleRates: [CodableAudioStreamBasicDescription] = []
+    @State private var pickerBitDepths: [CodableAudioStreamBasicDescription] = []
+    
+    private func updatePickerSelections() {
+        selectedSampleRateIndex = losslessSwitcherProxy.sampleRatesForCurrentBitDepth.firstIndex { $0.mSampleRate == losslessSwitcherProxy.currentSampleRate } ?? 0
+        selectedBitDepthIndex = losslessSwitcherProxy.bitDepthsForCurrentSampleRate.firstIndex { $0.mBitsPerChannel == losslessSwitcherProxy.currentBitDepth } ?? 0
+    }
 
+    private func updatePickerData() {
+        pickerSampleRates = losslessSwitcherProxy.sampleRatesForCurrentBitDepth
+        pickerBitDepths = losslessSwitcherProxy.bitDepthsForCurrentSampleRate
+        updatePickerSelections()
+    }
+    
     var body: some View {
         browserSection()
         controlSection()
+        Text(losslessSwitcherProxy.responseTimeStamp).font(.caption)
     }
     
     @ViewBuilder
@@ -37,9 +52,17 @@ struct ContentView: View {
                         
             } else {
                 
-                Button(showConnectionDetails ? "Hide Connection Details" : "Show Connection Details", action: {
-                    showConnectionDetails.toggle()
-                })
+                HStack {
+                    Button(showConnectionDetails ? "Return to Main UI" : "Connection Details", action: {
+                        showConnectionDetails.toggle()
+                    })
+                    if !showConnectionDetails {
+                        Spacer()
+                        Button("Refresh", action: {
+                            losslessSwitcherProxy.sendRequest(.refresh)
+                        })
+                    }
+                }.padding(.horizontal)
                 
                 
                 if showConnectionDetails {
@@ -55,13 +78,6 @@ struct ContentView: View {
                                 Button("Connect", action: {
                                     losslessSwitcherProxy.connectToService(at: index, with: .refresh)
                                 })
-                                
-                                /*
-                                 Button("Disconnect", action: {
-                                 losslessSwitcherProxy.disconnectFromService()
-                                 })
-                                 .disabled(losslessSwitcherProxy.connection?.state != .ready)
-                                 */
                             }.padding(.vertical)
                             
                         }
@@ -93,46 +109,96 @@ struct ContentView: View {
                     VStack {
                         Text("\(losslessSwitcherProxy.serverHostName): \(losslessSwitcherProxy.defaultOutputDeviceName)")
                         
-                        Button("Refresh", action: {
-                            losslessSwitcherProxy.sendRequest(.refresh)
-                        }).padding(.vertical)
-                        
-                        let formattedCurrentSampleRate = String(format: "Current: %.1f kHz", losslessSwitcherProxy.currentSampleRate)
-                        Text(formattedCurrentSampleRate)
-                        let formattedDetectedSampleRate = String(format: "Detected: %.1f kHz", losslessSwitcherProxy.detectedSampleRate)
-                        Text(formattedDetectedSampleRate)
-                        let autoSwitchingDescription = losslessSwitcherProxy.autoSwitchingEnabled ? "Auto Switching Enabled" : "Auto Switching Disabled"
-                        Text(autoSwitchingDescription)
-                        
-                        Button("Toggle Auto Switch", action: {
-                            losslessSwitcherProxy.sendRequest(.toggleAutoSwitching)
-                        }).padding(.vertical)
-                        
-                        Button("Set Rate to Detected", action: {
-                            losslessSwitcherProxy.sendRequest(.setDeviceSampleRate(losslessSwitcherProxy.detectedSampleRate * 1000))
-                        }).padding(.vertical)
-                            .disabled(losslessSwitcherProxy.detectedSampleRate < 1)
-                        
-                        Text("Supported sample rates:")
-                        
-                        Picker("Sample Rate", selection: $selectedSampleRateIndex) {
-                            //ForEach(0..<losslessSwitcherProxy.standardSampleRates.count) { index in
-                            ForEach(losslessSwitcherProxy.supportedSampleRates.indices, id: \.self) { index in
-                                Text("\(losslessSwitcherProxy.supportedSampleRates[index], specifier: "%.1f") kHz")
+                        VStack {
+                            let formattedCurrentSampleRate = String(format: "Current: %.1f kHz %d bit", losslessSwitcherProxy.currentSampleRate / 1000, losslessSwitcherProxy.currentBitDepth)
+                            Text(formattedCurrentSampleRate)
+                                .font(.title2)
+
+                            let formattedDetectedSampleRate = String(format: "Detected: %.1f kHz", losslessSwitcherProxy.detectedSampleRate / 1000)
+                            let formattedDetectedBitDepth = String(format: " %d bit", losslessSwitcherProxy.detectedBitDepth)
+                            if losslessSwitcherProxy.bitDepthDetectionEnabled {
+                                Text(formattedDetectedSampleRate + formattedDetectedBitDepth)
+                                    .font(.title2)
+                            } else {
+                                Text(formattedDetectedSampleRate)
+                                    .font(.title2)
                             }
                         }
-                        .pickerStyle(WheelPickerStyle())
-                        .frame(width: 150, height: 100)
-                        .clipped()
                         
-                        Button("Set Rate to Selected", action: {
-                            losslessSwitcherProxy.sendRequest(.setDeviceSampleRate(losslessSwitcherProxy.supportedSampleRates[selectedSampleRateIndex] * 1000))
-                        }).padding(.vertical)
-                            .disabled(losslessSwitcherProxy.supportedSampleRates.count == 0)
+                        Button("Set Current to Detected", action: {
+                            losslessSwitcherProxy.sendRequest(.setCurrentToDetected)
+                        }).padding(.bottom)
+                            .disabled(losslessSwitcherProxy.detectedSampleRate == 1)
+                        
+                        Divider()
+                        
+                        VStack(alignment: .leading, spacing: 10) {
+                            Toggle("Auto Switch", isOn: Binding<Bool>(
+                                get: { losslessSwitcherProxy.autoSwitchingEnabled },
+                                set: { newValue in
+                                    if newValue != losslessSwitcherProxy.autoSwitchingEnabled {
+                                        losslessSwitcherProxy.sendRequest(.toggleAutoSwitching)
+                                    }
+                                }
+                            ))
+                            
+                            Toggle("Bit Depth Detection", isOn: Binding<Bool>(
+                                get: { losslessSwitcherProxy.bitDepthDetectionEnabled },
+                                set: { newValue in
+                                    if newValue != losslessSwitcherProxy.bitDepthDetectionEnabled {
+                                        losslessSwitcherProxy.sendRequest(.toggleBitDepthDetection)
+                                    }
+                                }
+                            ))
+                        }.padding(.horizontal)
+                        
+                        Divider()
+                        
+                        Text("Manual override:")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal)
+                        
+                        HStack {
+                            VStack {
+                                Picker("Sample Rate", selection: $selectedSampleRateIndex) {
+                                    ForEach(pickerSampleRates.indices, id: \.self) { index in
+                                        //Text("\(pickerSampleRates[index].mSampleRate / 1000, specifier: "%.1f") kHz \(pickerSampleRates[index].mBitsPerChannel)")
+                                        Text("\(pickerSampleRates[index].mSampleRate / 1000, specifier: "%.1f") kHz")
+                                    }
+                                }
+                                .pickerStyle(WheelPickerStyle())
+                                .frame(width: 150, height: 100)
+                                .clipped()
+                                
+                                Button("Set Rate", action: {
+                                    print("Set Rate: \(pickerSampleRates[selectedSampleRateIndex])")
+                                    losslessSwitcherProxy.sendRequest(.setDeviceSampleRate(pickerSampleRates[selectedSampleRateIndex]))
+                                }).disabled(pickerSampleRates.count == 0)
+                            }
+                            
+                            VStack {
+                                Picker("Bit Depth", selection: $selectedBitDepthIndex) {
+                                    ForEach(pickerBitDepths.indices, id: \.self) { index in
+                                        //Text("\(pickerBitDepths[index].mBitsPerChannel) bit \(pickerBitDepths[index].mSampleRate / 1000, specifier: "%.1f") kHz")
+                                        Text("\(pickerBitDepths[index].mBitsPerChannel) bit")
+                                    }
+                                }
+                                .pickerStyle(WheelPickerStyle())
+                                .frame(width: 150, height: 100)
+                                .clipped()
+                                
+                                Button("Set Bits", action: {
+                                    print("Set Bits: \(pickerBitDepths[selectedBitDepthIndex])")
+                                    losslessSwitcherProxy.sendRequest(.setDeviceBitDepth(pickerBitDepths[selectedBitDepthIndex]))
+                                }).disabled(pickerBitDepths.count == 0)
+                            }
+                        }
                     }
+                }
+                .onChange(of: losslessSwitcherProxy.responseTimeStamp) { _ in
+                    updatePickerData()
                 }
             }
         }
     }
-        
 }
