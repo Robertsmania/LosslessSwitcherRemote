@@ -49,6 +49,14 @@ struct ContentView: View {
                 Button("Browse for services", action: {
                     losslessSwitcherProxy.browseForServices()
                 }).padding(.vertical)
+                
+                Text("This app requires a macOS computer on your network running LosslessSwitcherNetworkServer.")
+                Button(action: {
+                    guard let url = URL(string: "https://github.com/Robertsmania/LosslessSwitcherNetworkServer") else { return }
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                }) {
+                    Text("https://github.com/Robertsmania/LosslessSwitcherNetworkServer")
+                }
                         
             } else {
                 
